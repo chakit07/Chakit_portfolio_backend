@@ -7,10 +7,14 @@ const env = require('../config/env');
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 const setSessionCookie = (res, sessionId) => {
+  // SameSite must be 'none' when frontend & backend are on different domains (Vercel + Render).
+  // 'lax' (the browser default) silently drops cross-site cookies, causing 401 on every request.
+  // SameSite=None requires Secure=true (HTTPS), which Render always provides in production.
+  const isProduction = env.IS_PRODUCTION;
   res.cookie('sessionId', sessionId, {
     httpOnly: true,
-    secure: env.IS_PRODUCTION,
-    sameSite: 'lax',
+    secure: isProduction,          // Must be true when SameSite=none
+    sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-origin prod, 'lax' for local dev
     maxAge: SESSION_DURATION_MS,
     path: '/'
   });
@@ -98,15 +102,17 @@ const logout = async (req, res, next) => {
       await Session.deleteOne({ sessionId });
     }
 
+    const isProduction = env.IS_PRODUCTION;
     res.clearCookie('sessionId', {
       httpOnly: true,
-      secure: env.IS_PRODUCTION,
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/'
     });
 
     res.clearCookie('csrfToken', {
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/'
     });
 

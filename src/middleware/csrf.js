@@ -49,10 +49,11 @@ const csrfProtection = (req, res, next) => {
 
 const setCsrfCookie = (res) => {
   const token = generateCsrfToken();
+  const isProduction = process.env.NODE_ENV === 'production';
   res.cookie('csrfToken', token, {
     httpOnly: false, // Must be readable by client JS to set in request header
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-origin (Vercel → Render)
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   });
   return token;
