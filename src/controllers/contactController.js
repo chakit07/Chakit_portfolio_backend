@@ -1,5 +1,6 @@
 const validator = require('validator');
 const ContactMessage = require('../models/ContactMessage');
+const { sendContactNotification } = require('../services/emailService');
 
 const submitContact = async (req, res, next) => {
   try {
@@ -34,6 +35,17 @@ const submitContact = async (req, res, next) => {
       message: message.trim().slice(0, 5000),
       ip: req.ip || '',
       userAgent: req.headers['user-agent'] || ''
+    });
+
+    // Send email notification to portfolio owner via nodemailer asynchronously
+    sendContactNotification({
+      name: contact.name,
+      email: contact.email,
+      subject: contact.subject,
+      message: contact.message,
+      createdAt: contact.createdAt
+    }).catch((err) => {
+      console.error('[Email Notification Error]:', err.message);
     });
 
     res.status(201).json({
@@ -123,6 +135,15 @@ const markReadStatus = async (req, res, next) => {
   }
 };
 
+const markAllRead = async (req, res, next) => {
+  try {
+    await ContactMessage.updateMany({ isRead: false }, { $set: { isRead: true } });
+    res.status(200).json({ success: true, message: 'All messages marked as read.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const toggleArchive = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -161,6 +182,7 @@ module.exports = {
   submitContact,
   getAllMessages,
   markReadStatus,
+  markAllRead,
   toggleArchive,
   deleteMessage
 };

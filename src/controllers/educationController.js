@@ -11,7 +11,7 @@ const getAllEducation = async (req, res, next) => {
 
 const createEducation = async (req, res, next) => {
   try {
-    const { institution, degree, field, startDate, endDate, description, order } = req.body;
+    const { institution, degree, field, startDate, endDate, description, grade, order } = req.body;
 
     if (!institution || !degree || !startDate) {
       return res.status(400).json({ success: false, message: 'Institution, degree, and start date are required.' });
@@ -27,6 +27,7 @@ const createEducation = async (req, res, next) => {
       startDate: startDate.trim(),
       endDate: endDate || '',
       description: description || '',
+      grade: grade ? grade.trim() : '',
       order: nextOrder
     });
 
@@ -44,7 +45,7 @@ const updateEducation = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Education record not found.' });
     }
 
-    const fields = ['institution', 'degree', 'field', 'startDate', 'endDate', 'description', 'order'];
+    const fields = ['institution', 'degree', 'field', 'startDate', 'endDate', 'description', 'grade', 'order'];
     fields.forEach((field) => {
       if (req.body[field] !== undefined) {
         record[field] = req.body[field];

@@ -15,7 +15,7 @@ const env = {
   MAX_FILE_SIZE_BYTES: (parseInt(process.env.MAX_FILE_SIZE_MB, 10) || 10) * 1024 * 1024,
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
-  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.0-flash'
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.6-flash'
 };
 
 module.exports = env;

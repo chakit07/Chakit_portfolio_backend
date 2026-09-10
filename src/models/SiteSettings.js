@@ -13,6 +13,8 @@ const siteSettingsSchema = new mongoose.Schema(
       profileImage: { type: String, default: '' },
       logoText: { type: String, default: 'Portfolio' },
       logoImage: { type: String, default: '' },
+      adminTitle: { type: String, default: 'Admin Console' },
+      adminLogoImage: { type: String, default: '' },
       roles: {
         type: [String],
         default: [
@@ -65,6 +67,11 @@ const siteSettingsSchema = new mongoose.Schema(
       enableOnMobile: { type: Boolean, default: false },
       fallbackImage: { type: String, default: '' },
       hologramImage: { type: String, default: '' },
+      backgroundPreset: {
+        type: String,
+        enum: ['constellation', 'cyber-waves', 'prism-crystals', 'energy-helix', 'floating-orbs', 'none'],
+        default: 'constellation'
+      },
       imageBorderEffect: { type: String, default: 'glow-gradient' },
       borderColor: { type: String, default: '' },
       borderWidth: { type: Number, min: 1, max: 16, default: 2 },

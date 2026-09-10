@@ -28,6 +28,11 @@ const educationSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    grade: {
+      type: String,
+      default: '',
+      trim: true
+    },
     order: {
       type: Number,
       default: 0

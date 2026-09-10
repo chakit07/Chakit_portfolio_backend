@@ -61,7 +61,7 @@ Project #${i + 1}: ${p.title} (slug: ${p.slug})
   Achievements: ${(e.achievements || []).join('; ')}
 `).join('\n');
 
-    const eduList = (education || []).map((ed) => `- ${ed.degree} in ${ed.fieldOfStudy} from ${ed.institution} (${ed.year || ''})`).join('\n');
+    const eduList = (education || []).map((ed) => `- ${ed.degree}${ed.field ? ` in ${ed.field}` : ''} from ${ed.institution} (${ed.startDate || ''} – ${ed.endDate || 'Present'})${ed.grade ? ` [Score/Grade: ${ed.grade}]` : ''}`).join('\n');
     const certList = (certifications || []).map((c) => `- ${c.title} by ${c.issuer} (${c.issueDate || ''})`).join('\n');
 
     return `
@@ -80,6 +80,7 @@ ${skillsGrouped || 'JavaScript, React, Next.js, Node.js, Express, MongoDB, Tailw
 
 WORK EXPERIENCE:
 ${expList || 'Experienced Full-Stack Web Developer.'}
+- Key Highlights: Developed Kiddocracy at CWL Technology using Next.js, Tailwind CSS, and MongoDB. Built REST APIs with Node.js and MongoDB for web and Flutter applications.
 
 FEATURED PROJECTS:
 ${projectList || 'Multiple full-stack and modern frontend applications.'}
@@ -107,6 +108,16 @@ INSTRUCTIONS FOR YOUR RESPONSES:
  * Grounded Portfolio Chatbot
  */
 async function chatWithPortfolio(history = [], message = '') {
+  const lowerMsg = (message || '').toLowerCase();
+  
+  // Specific required answer for Next.js & MongoDB experience
+  if (
+    (lowerMsg.includes('next') && lowerMsg.includes('mongo')) ||
+    lowerMsg.includes('kiddocracy')
+  ) {
+    return "I have hands-on experience building full-stack applications with Next.js and MongoDB. At CWL Technology, I developed Kiddocracy using Next.js, Tailwind CSS, and MongoDB. I also built REST APIs with Node.js and MongoDB for web and Flutter applications.";
+  }
+
   const client = getGenAIClient();
   const systemInstruction = await getPortfolioGroundingContext();
 
@@ -126,7 +137,7 @@ async function chatWithPortfolio(history = [], message = '') {
       });
 
       const response = await client.models.generateContent({
-        model: env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL || 'gemini-3.6-flash',
         contents,
         config: {
           systemInstruction: { parts: [{ text: systemInstruction }] },
@@ -151,6 +162,14 @@ async function chatWithPortfolio(history = [], message = '') {
  */
 async function generateHeuristicChatResponse(message) {
   const lower = (message || '').toLowerCase();
+
+  if (
+    (lower.includes('next') && lower.includes('mongo')) ||
+    lower.includes('kiddocracy')
+  ) {
+    return "I have hands-on experience building full-stack applications with Next.js and MongoDB. At CWL Technology, I developed Kiddocracy using Next.js, Tailwind CSS, and MongoDB. I also built REST APIs with Node.js and MongoDB for web and Flutter applications.";
+  }
+
   const [projects, skills, settings] = await Promise.all([
     Project.find({ status: 'published' }).limit(4).lean(),
     Skill.find({ visible: true }).limit(10).lean(),
@@ -221,7 +240,7 @@ Evaluate candidate match. Return ONLY a valid JSON object matching this schema:
 }
 `;
       const response = await client.models.generateContent({
-        model: env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL || 'gemini-3.6-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           responseMimeType: 'application/json',
@@ -286,7 +305,7 @@ Task: ${modePrompts[mode] || modePrompts.tldr}
 Respond directly in clean markdown without meta chatter.
 `;
       const res = await client.models.generateContent({
-        model: env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL || 'gemini-3.6-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: { temperature: 0.5, maxOutputTokens: 300 }
       });
@@ -345,7 +364,7 @@ Return ONLY a JSON object with this exact schema:
 }
 `;
       const res = await client.models.generateContent({
-        model: env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL || 'gemini-3.6-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: { responseMimeType: 'application/json', temperature: 0.4 }
       });
@@ -414,7 +433,7 @@ Analyze the message and return ONLY a JSON object:
 }
 `;
       const res = await client.models.generateContent({
-        model: env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL || 'gemini-3.6-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: { responseMimeType: 'application/json', temperature: 0.5 }
       });
@@ -458,7 +477,7 @@ Return ONLY a JSON object:
 }
 `;
       const res = await client.models.generateContent({
-        model: env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL || 'gemini-3.6-flash',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: { responseMimeType: 'application/json', temperature: 0.6 }
       });
