@@ -6,8 +6,8 @@ node_modules/
 .env.*
 !.env.example
 
-# Uploaded Files
-uploads/*
+# Uploaded Files (Tracked so uploaded media deploys to Render)
+# uploads/*
 !uploads/.gitkeep
 
 # Logs

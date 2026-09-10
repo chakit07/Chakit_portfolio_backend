@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "seed": "node src/utils/seed.js",
     "create-admin": "node src/utils/createAdmin.js",
+    "migrate-to-atlas": "node src/utils/exportToAtlas.js",
     "test": "node --test tests/**/*.test.js"
   },
   "dependencies": {
