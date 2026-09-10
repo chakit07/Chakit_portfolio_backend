@@ -18,11 +18,13 @@ const requireAuth = async (req, res, next) => {
     });
 
     if (!session) {
-      // Clear invalid cookie
+      // Clear invalid cookie — options must exactly match those used when setting it
+      const isProduction = process.env.NODE_ENV === 'production';
       res.clearCookie('sessionId', {
         httpOnly: true,
-        sameSite: 'lax',
-        secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
+        sameSite: isProduction ? 'none' : 'lax',
+        secure: isProduction,
+        path: '/'
       });
       return res.status(401).json({
         success: false,
