@@ -11,6 +11,12 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// Trust the first proxy hop (required on Render, Railway, Heroku, etc.)
+// Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+// because the X-Forwarded-For header is set by the cloud reverse proxy but
+// Express doesn't trust it by default (trust proxy = false).
+app.set('trust proxy', 1);
+
 // Security HTTP headers
 app.use(
   helmet({
